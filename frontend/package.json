@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm install && npm install @heroicons/react@2.0.18",
+    "prebuild": "npm install",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "next lint"
