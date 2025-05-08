@@ -1,61 +1,32 @@
-# Deploying Task Management System to Render
+# Deploying Task Management System on Render
 
 ## Prerequisites
 - A [Render](https://render.com) account
-- MongoDB Atlas account (for database)
-- Your project in a Git repository
+- MongoDB Atlas account
+- Git repository with your code
 
-## Step 1: MongoDB Atlas Setup
+## 1. Database Setup (MongoDB Atlas)
 
 1. Create a MongoDB Atlas cluster:
    ```
    a. Go to MongoDB Atlas Dashboard
-   b. Create a new cluster (free tier works)
-   c. Go to Network Access in the security menu
-   d. Click "+ ADD IP ADDRESS"
-   e. Click "ALLOW ACCESS FROM ANYWHERE" (adds 0.0.0.0/0)
-   f. Click Confirm
+   b. Create new cluster (free tier works)
+   c. Network Access → Add IP Address → Allow Access from Anywhere (0.0.0.0/0)
+   d. Database Access → Add Database User
+   e. Get your connection string
    ```
 
-2. Create Database User:
-   ```
-   a. Go to Database Access
-   b. Click "+ ADD NEW DATABASE USER"
-   c. Choose Password authentication
-   d. Enter username and password
-   e. Set Built-in Role to "Atlas admin"
-   f. Click "Add User"
-   ```
+## 2. Backend Deployment
 
-3. Get Connection String:
+1. Create a new Web Service:
+   - Connect your repository
+   - Root Directory: `backend`
+   - Build Command: `npm ci && npx @nestjs/cli build`
+   - Start Command: `node dist/main.js`
+   - Node Version: 18.17.0 (set in .node-version)
+
+2. Add Environment Variables:
    ```
-   a. Click "Connect" on your cluster
-   b. Choose "Connect your application"
-   c. Copy the connection string
-   d. Replace <password> with your database user password
-   ```
-
-## Step 2: Backend Deployment
-
-1. Log in to [Render Dashboard](https://dashboard.render.com)
-
-2. Create a New Web Service:
-   - Click "New +" > "Web Service"
-   - Connect your Git repository
-   - Select the backend directory
-
-3. Configure the service:
-   ```
-   Name: task-management-backend
-   Root Directory: backend
-   Environment: Node
-   Build Command: npm install && npx @nestjs/cli build
-   Start Command: node dist/main.js
-   Auto-Deploy: Yes
-   ```
-
-4. Add Required Environment Variables:
-   ```env
    NODE_ENV=production
    PORT=10000
    MONGODB_URI=your_mongodb_uri
@@ -66,32 +37,29 @@
    JWT_REFRESH_EXPIRES_IN=7d
    RATE_LIMIT_WINDOW=3600000
    RATE_LIMIT_MAX_REQUESTS=100
-   LOGIN_RATE_LIMIT_WINDOW=3600000
    LOGIN_RATE_LIMIT_MAX_ATTEMPTS=5
    ALLOWED_ORIGINS=https://your-frontend-url.onrender.com
    ALLOWED_METHODS=GET,POST,PUT,DELETE,PATCH,OPTIONS
    PASSWORD_SALT_ROUNDS=12
    ```
 
-## Step 3: Frontend Deployment
-
-1. In Render Dashboard, create another Web Service:
-   - Click "New +" > "Web Service"
-   - Connect your Git repository
-   - Select the frontend directory
-
-2. Configure the service:
-   ```
-   Name: task-management-frontend
-   Root Directory: frontend
-   Environment: Node
-   Build Command: npm install && npm run build
-   Start Command: npm start
-   Auto-Deploy: Yes
+3. Verify Deployment:
+   ```bash
+   # Check if server is running
+   curl https://your-backend-url.onrender.com/health
    ```
 
-3. Add Environment Variables:
-   ```env
+## 3. Frontend Deployment
+
+1. Create a new Web Service:
+   - Connect your repository
+   - Root Directory: `frontend`
+   - Build Command: `npm ci && npm run build`
+   - Start Command: `npm start`
+   - Node Version: >=18.17.0 (set in package.json)
+
+2. Add Environment Variables:
+   ```
    NODE_ENV=production
    PORT=3000
    NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
@@ -99,94 +67,93 @@
    NEXT_PUBLIC_NOTIFICATIONS_ENABLED=true
    ```
 
-## Step 4: Verify Deployments
-
-1. Backend Verification:
-   ```
-   a. Check deployment logs for successful build
-   b. Verify MongoDB connection is established
-   c. Test API endpoints using Postman or curl
+3. Verify Deployment:
+   ```bash
+   # Check frontend health
+   curl https://your-frontend-url.onrender.com/api/health
    ```
 
-2. Frontend Verification:
-   ```
-   a. Check build logs for successful compilation
-   b. Visit the frontend URL
-   c. Test user registration and login
-   d. Verify task creation and management
-   ```
+## 4. Post-Deployment Steps
 
-## Troubleshooting Common Issues
+1. Update Backend CORS:
+   - Go to backend service settings
+   - Update ALLOWED_ORIGINS with frontend URL
+   - Redeploy backend service
 
-### 1. Backend Build Issues
-If you see TypeScript errors:
-- Check main.ts helmet import is correct
-- Verify tsconfig.json has proper settings
-- Ensure all dependencies are in package.json
+2. Test Connections:
+   ```bash
+   # Backend Health
+   curl https://your-backend-url.onrender.com/health
 
-### 2. Frontend Build Issues
-If you encounter Next.js build errors:
-- Check page.tsx files for correct prop types
-- Verify all dynamic routes have proper typing
-- Ensure environment variables are set correctly
+   # Frontend Health
+   curl https://your-frontend-url.onrender.com/api/health
 
-### 3. Runtime Issues
-If the application fails to start:
-- Check MongoDB connection string
-- Verify all required environment variables
-- Ensure port configuration is correct
-- Check CORS settings match frontend URL
-
-### 4. Connection Issues
-If frontend can't connect to backend:
-- Verify API URLs are correct
-- Check CORS configuration
-- Ensure WebSocket URL is using wss://
-- Verify network access in MongoDB Atlas
-
-## Monitoring and Maintenance
-
-1. Regular Checks:
-   ```
-   - Monitor error logs in Render dashboard
-   - Check MongoDB Atlas metrics
-   - Review application performance
-   - Monitor API response times
+   # API Connection
+   curl https://your-backend-url.onrender.com/api/tasks
    ```
 
-2. Updates and Maintenance:
+## Troubleshooting
+
+1. Connection Issues:
+   ```bash
+   # Check backend logs
+   render logs your-backend-service
+
+   # Check frontend logs
+   render logs your-frontend-service
    ```
-   - Keep dependencies updated
-   - Review security alerts
-   - Backup database regularly
-   - Monitor resource usage
-   ```
 
-## Security Best Practices
+2. Build Failures:
+   - Check Node.js version (18.17.0)
+   - Verify all dependencies are in package.json
+   - Check build command outputs
 
-1. Environment Variables:
-   - Use strong JWT secrets
-   - Rotate credentials regularly
-   - Keep MongoDB credentials secure
-   - Use different values for production
+3. Runtime Errors:
+   - Verify environment variables
+   - Check MongoDB connection
+   - Verify CORS settings
 
-2. Database Security:
-   - Regular backups
+4. TypeScript Errors:
+   - Check tsconfig.json settings
+   - Verify types are properly imported
+   - Check for missing type definitions
+
+## Security Checklist
+
+1. MongoDB Atlas:
+   - Strong password for database user
+   - IP whitelist configured
    - Monitor access logs
-   - Update security patches
-   - Review access patterns
 
-3. Application Security:
-   - Enable rate limiting
-   - Use HTTPS only
-   - Keep dependencies updated
-   - Monitor for suspicious activity
+2. Environment Variables:
+   - All sensitive data in env vars
+   - Different values for production
+   - Secure JWT secret
+
+3. CORS Settings:
+   - Specific origins only
+   - Proper methods configured
+   - Credentials handled correctly
+
+## Monitoring
+
+1. Set Up Alerts:
+   - Backend service health
+   - Frontend service health
+   - MongoDB Atlas metrics
+   - Error rate monitoring
+
+2. Regular Checks:
+   - Review error logs
+   - Monitor performance
+   - Check resource usage
+   - Verify backups
 
 ## Additional Resources
 
-- [Render Node.js Guide](https://render.com/docs/deploy-node-express-app)
-- [Next.js Deployment](https://nextjs.org/docs/deployment)
-- [MongoDB Atlas Security](https://docs.atlas.mongodb.com/security/)
-- [NestJS Production](https://docs.nestjs.com/techniques/performance)
+- [Render Documentation](https://render.com/docs)
+- [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
+- [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
+- [NestJS Production Guide](https://docs.nestjs.com/techniques/performance)
 
 For any issues, check the deployment logs in your Render dashboard and ensure all environment variables are properly set.
