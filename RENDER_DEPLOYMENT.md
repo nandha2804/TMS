@@ -5,14 +5,35 @@
 - MongoDB Atlas account (for database)
 - Your project in a Git repository
 
-## Step 1: Database Setup (MongoDB Atlas)
+## Step 1: MongoDB Atlas Setup
 
 1. Create a MongoDB Atlas cluster:
-   - Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-   - Create a new cluster (free tier works)
-   - Set up database access user
-   - Get your connection string
-   - Whitelist IP addresses (0.0.0.0/0 for all IPs)
+   ```
+   a. Go to MongoDB Atlas Dashboard
+   b. Create a new cluster (free tier works)
+   c. Go to Network Access in the security menu
+   d. Click "+ ADD IP ADDRESS"
+   e. Click "ALLOW ACCESS FROM ANYWHERE" (adds 0.0.0.0/0)
+   f. Click Confirm
+   ```
+
+2. Create Database User:
+   ```
+   a. Go to Database Access
+   b. Click "+ ADD NEW DATABASE USER"
+   c. Choose Password authentication
+   d. Enter username and password
+   e. Set Built-in Role to "Atlas admin"
+   f. Click "Add User"
+   ```
+
+3. Get Connection String:
+   ```
+   a. Click "Connect" on your cluster
+   b. Choose "Connect your application"
+   c. Copy the connection string
+   d. Replace <password> with your database user password
+   ```
 
 ## Step 2: Backend Deployment
 
@@ -55,12 +76,16 @@
 
    # CORS Configuration (update after frontend deployment)
    ALLOWED_ORIGINS=https://your-frontend-url.onrender.com
+   ALLOWED_METHODS=GET,POST,PUT,DELETE,PATCH,OPTIONS
 
    # Security Configuration
    PASSWORD_SALT_ROUNDS=12
    ```
 
-5. Click "Create Web Service"
+5. Important Settings:
+   - Make sure PORT is set to 10000
+   - Ensure MONGODB_URI is the complete connection string
+   - Double-check that all environment variables are set
 
 ## Step 3: Frontend Deployment
 
@@ -84,97 +109,77 @@
    NEXT_PUBLIC_NOTIFICATIONS_ENABLED=true
    ```
 
-## Step 4: Post-Deployment Configuration
+## Troubleshooting Guide
 
-1. After frontend deployment:
-   - Copy the frontend URL
-   - Go to backend service settings
-   - Update ALLOWED_ORIGINS with the frontend URL
+### MongoDB Connection Issues
 
-2. Update frontend environment variables:
-   - Copy the backend URL
-   - Update NEXT_PUBLIC_API_URL and NEXT_PUBLIC_WS_URL
+If you see the error: "Could not connect to any servers in your MongoDB Atlas cluster":
 
-## Troubleshooting Common Issues
+1. Check IP Whitelist:
+   - Go to MongoDB Atlas Dashboard
+   - Network Access section
+   - Ensure 0.0.0.0/0 is in the IP whitelist
+   - If not, add it and wait 1-2 minutes for propagation
 
-1. **Environment Variable Errors**:
-   If you see errors like "MONGODB_USER is required":
-   - Check all required variables are set in Render dashboard
-   - Verify variable names match exactly
-   - Ensure no trailing spaces in values
+2. Verify Connection String:
+   - Check MONGODB_URI format
+   - Ensure username and password are URL encoded
+   - Verify database name is correct
 
-2. **MongoDB Connection Issues**:
-   - Verify MongoDB Atlas IP whitelist includes 0.0.0.0/0
-   - Check connection string is correct
-   - Verify database user credentials
+3. Check Database User:
+   - Confirm user has proper permissions
+   - Try recreating database user if issues persist
 
-3. **CORS Errors**:
-   - Ensure ALLOWED_ORIGINS matches frontend URL exactly
-   - Include protocol (https://) in URL
-   - Remove any trailing slashes
+### Port Binding Issues
 
-4. **Build Issues**:
-   - Check build logs for errors
-   - Verify root directory settings
-   - Ensure all dependencies are in package.json
+If you see "No open ports detected":
 
-## Security Best Practices
+1. Verify in main.ts:
+   - Port is set to process.env.PORT
+   - Listen address is set to '0.0.0.0'
 
-1. **Environment Variables**:
-   - Use strong, unique values for JWT_SECRET
-   - Never commit .env files
-   - Use different values for production and development
+2. Check Environment Variables:
+   - PORT is set to 10000
+   - No conflicting port settings
 
-2. **Database Security**:
-   - Use strong MongoDB passwords
+### Deployment Logs
+
+To check deployment logs:
+
+1. Go to your Web Service in Render
+2. Click on "Logs" in the left menu
+3. Look for specific error messages
+4. Check "System" logs for infrastructure issues
+5. Check "Deploy" logs for build problems
+
+## Monitoring and Verification
+
+1. After Deployment:
+   - Watch logs for successful startup
+   - Verify database connection
+   - Test API endpoints
+
+2. Health Checks:
+   - Monitor application logs
+   - Check for error messages
+   - Verify WebSocket connections
+
+## Security Reminders
+
+1. Environment Variables:
+   - Use strong JWT secrets
+   - Keep MongoDB credentials secure
+   - Update CORS settings appropriately
+
+2. Database Security:
    - Regular backups
    - Monitor access logs
-
-3. **API Security**:
-   - Enable rate limiting
-   - Use HTTPS only
-   - Keep dependencies updated
-
-## Monitoring
-
-1. Set up Render monitoring:
-   - Enable logs monitoring
-   - Configure error notifications
-   - Monitor resource usage
-
-2. Database monitoring:
-   - Use MongoDB Atlas monitoring
-   - Set up alerts
-   - Monitor performance metrics
-
-## Maintenance
-
-1. Regular tasks:
-   - Update dependencies
-   - Monitor error logs
-   - Check resource usage
-
-2. Performance:
-   - Monitor response times
-   - Check database queries
-   - Review API endpoints
-
-## Generating Secure Values
-
-1. Generate JWT Secret:
-   ```bash
-   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-   ```
-
-2. Test your deployment:
-   - Register a new user
-   - Create and manage tasks
-   - Test real-time updates
-   - Verify WebSocket connections
+   - Update user passwords periodically
 
 ## Additional Resources
 
-- [Render Documentation](https://render.com/docs)
-- [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
+- [Render Deployment Docs](https://render.com/docs/deploy-node-express-app)
+- [MongoDB Atlas Security Checklist](https://docs.atlas.mongodb.com/security-checklist/)
 - [NestJS Production Best Practices](https://docs.nestjs.com/techniques/performance)
-- [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
+
+Remember to always check the deployment logs in Render dashboard if you encounter any issues. They provide valuable information about what might be going wrong during the deployment process.
