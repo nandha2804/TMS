@@ -14,8 +14,6 @@
    - Get your connection string
    - Whitelist IP addresses (0.0.0.0/0 for all IPs)
 
-2. Note down your MongoDB URI
-
 ## Step 2: Backend Deployment
 
 1. Log in to [Render Dashboard](https://dashboard.render.com)
@@ -33,16 +31,33 @@
    - Select instance type (Free tier works for testing)
    - Set Root Directory to: `backend`
 
-4. Add Environment Variables:
-   ```
+4. Add Required Environment Variables:
+   ```env
+   # Server Configuration
    NODE_ENV=production
    PORT=10000
-   MONGODB_URI=your_mongodb_atlas_uri
-   JWT_SECRET=your_secure_jwt_secret
+
+   # MongoDB Configuration (update with your values)
+   MONGODB_URI=mongodb+srv://your-connection-string
+   MONGODB_USER=your_mongodb_username
+   MONGODB_PASS=your_mongodb_password
+
+   # JWT Configuration (use secure values)
+   JWT_SECRET=generate-a-secure-32-char-min-secret
    JWT_EXPIRES_IN=15m
    JWT_REFRESH_EXPIRES_IN=7d
+
+   # Rate Limiting
+   RATE_LIMIT_WINDOW=3600000
+   RATE_LIMIT_MAX_REQUESTS=100
+   LOGIN_RATE_LIMIT_WINDOW=3600000
+   LOGIN_RATE_LIMIT_MAX_ATTEMPTS=5
+
+   # CORS Configuration (update after frontend deployment)
    ALLOWED_ORIGINS=https://your-frontend-url.onrender.com
-   WS_CORS_ORIGIN=https://your-frontend-url.onrender.com
+
+   # Security Configuration
+   PASSWORD_SALT_ROUNDS=12
    ```
 
 5. Click "Create Web Service"
@@ -63,59 +78,62 @@
    - Set Root Directory to: `frontend`
 
 3. Add Environment Variables:
-   ```
+   ```env
    NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
    NEXT_PUBLIC_WS_URL=wss://your-backend-url.onrender.com
    NEXT_PUBLIC_NOTIFICATIONS_ENABLED=true
    ```
 
-4. Click "Create Web Service"
+## Step 4: Post-Deployment Configuration
 
-## Step 4: Post-Deployment Steps
+1. After frontend deployment:
+   - Copy the frontend URL
+   - Go to backend service settings
+   - Update ALLOWED_ORIGINS with the frontend URL
 
-1. Update CORS Configuration:
-   - Ensure backend's ALLOWED_ORIGINS includes your frontend Render URL
-   - Check WebSocket configuration is correct
-
-2. Verify Deployment:
-   - Test user registration/login
-   - Create and manage tasks
-   - Check real-time notifications
-   - Verify WebSocket connections
+2. Update frontend environment variables:
+   - Copy the backend URL
+   - Update NEXT_PUBLIC_API_URL and NEXT_PUBLIC_WS_URL
 
 ## Troubleshooting Common Issues
 
-1. **Build Issues**:
-   - If build fails with "nest: not found", verify the build command uses `npx @nestjs/cli build`
-   - Make sure root directory is set correctly for both services
-   - Check package.json for correct dependencies
+1. **Environment Variable Errors**:
+   If you see errors like "MONGODB_USER is required":
+   - Check all required variables are set in Render dashboard
+   - Verify variable names match exactly
+   - Ensure no trailing spaces in values
 
-2. **Connection Issues**:
-   - Verify environment variables are set correctly
-   - Check MongoDB connection string
-   - Ensure CORS origins match exactly
+2. **MongoDB Connection Issues**:
+   - Verify MongoDB Atlas IP whitelist includes 0.0.0.0/0
+   - Check connection string is correct
+   - Verify database user credentials
 
-3. **WebSocket Problems**:
-   - Make sure WSS (WebSocket Secure) is used
-   - Check WS_CORS_ORIGIN configuration
-   - Verify frontend WebSocket URL
+3. **CORS Errors**:
+   - Ensure ALLOWED_ORIGINS matches frontend URL exactly
+   - Include protocol (https://) in URL
+   - Remove any trailing slashes
+
+4. **Build Issues**:
+   - Check build logs for errors
+   - Verify root directory settings
+   - Ensure all dependencies are in package.json
 
 ## Security Best Practices
 
 1. **Environment Variables**:
-   - Never commit .env files to Git
-   - Use strong, unique secrets
-   - Rotate sensitive credentials periodically
+   - Use strong, unique values for JWT_SECRET
+   - Never commit .env files
+   - Use different values for production and development
 
-2. **Database**:
-   - Use strong MongoDB Atlas passwords
-   - Enable database backups
-   - Monitor database access logs
+2. **Database Security**:
+   - Use strong MongoDB passwords
+   - Regular backups
+   - Monitor access logs
 
 3. **API Security**:
-   - Keep dependencies updated
    - Enable rate limiting
    - Use HTTPS only
+   - Keep dependencies updated
 
 ## Monitoring
 
@@ -126,21 +144,33 @@
 
 2. Database monitoring:
    - Use MongoDB Atlas monitoring
-   - Set up alerts for unusual activity
+   - Set up alerts
    - Monitor performance metrics
 
 ## Maintenance
 
 1. Regular tasks:
-   - Update dependencies monthly
+   - Update dependencies
    - Monitor error logs
    - Check resource usage
-   - Backup database regularly
 
-2. Performance optimization:
+2. Performance:
    - Monitor response times
-   - Optimize database queries
-   - Cache frequently accessed data
+   - Check database queries
+   - Review API endpoints
+
+## Generating Secure Values
+
+1. Generate JWT Secret:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. Test your deployment:
+   - Register a new user
+   - Create and manage tasks
+   - Test real-time updates
+   - Verify WebSocket connections
 
 ## Additional Resources
 
@@ -148,26 +178,3 @@
 - [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
 - [NestJS Production Best Practices](https://docs.nestjs.com/techniques/performance)
 - [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
-
-## Quick Fix for Common Build Issues
-
-If you encounter build issues:
-
-1. Verify package.json has these dependencies in backend:
-   ```json
-   {
-     "dependencies": {
-       "@nestjs/cli": "^10.0.0",
-       "@nestjs/core": "^10.0.0",
-       "@nestjs/common": "^10.0.0"
-     }
-   }
-   ```
-
-2. Make sure root directories are set correctly:
-   - Backend: `/backend`
-   - Frontend: `/frontend`
-
-3. Use the correct build commands:
-   - Backend: `npm install && npx @nestjs/cli build`
-   - Frontend: `npm install && npm run build`
