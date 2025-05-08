@@ -28,9 +28,10 @@
 3. Configure the service:
    - Name: `task-management-backend` (or your preference)
    - Environment: `Node`
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm run start:prod`
+   - Build Command: `npm install && npx @nestjs/cli build`
+   - Start Command: `node dist/main.js`
    - Select instance type (Free tier works for testing)
+   - Set Root Directory to: `backend`
 
 4. Add Environment Variables:
    ```
@@ -59,6 +60,7 @@
    - Build Command: `npm install && npm run build`
    - Start Command: `npm start`
    - Select instance type (Free tier works for testing)
+   - Set Root Directory to: `frontend`
 
 3. Add Environment Variables:
    ```
@@ -83,20 +85,20 @@
 
 ## Troubleshooting Common Issues
 
-1. **Connection Issues**:
+1. **Build Issues**:
+   - If build fails with "nest: not found", verify the build command uses `npx @nestjs/cli build`
+   - Make sure root directory is set correctly for both services
+   - Check package.json for correct dependencies
+
+2. **Connection Issues**:
    - Verify environment variables are set correctly
    - Check MongoDB connection string
    - Ensure CORS origins match exactly
 
-2. **WebSocket Problems**:
+3. **WebSocket Problems**:
    - Make sure WSS (WebSocket Secure) is used
    - Check WS_CORS_ORIGIN configuration
    - Verify frontend WebSocket URL
-
-3. **Build Failures**:
-   - Check Render logs for errors
-   - Verify all dependencies are listed in package.json
-   - Ensure build commands are correct
 
 ## Security Best Practices
 
@@ -146,3 +148,26 @@
 - [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
 - [NestJS Production Best Practices](https://docs.nestjs.com/techniques/performance)
 - [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
+
+## Quick Fix for Common Build Issues
+
+If you encounter build issues:
+
+1. Verify package.json has these dependencies in backend:
+   ```json
+   {
+     "dependencies": {
+       "@nestjs/cli": "^10.0.0",
+       "@nestjs/core": "^10.0.0",
+       "@nestjs/common": "^10.0.0"
+     }
+   }
+   ```
+
+2. Make sure root directories are set correctly:
+   - Backend: `/backend`
+   - Frontend: `/frontend`
+
+3. Use the correct build commands:
+   - Backend: `npm install && npx @nestjs/cli build`
+   - Frontend: `npm install && npm run build`
