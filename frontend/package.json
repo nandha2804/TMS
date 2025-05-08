@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm install @heroicons/react@2.0.18 && next build",
-    "start": "next start -p ${PORT:-3000}",
+    "build": "npm install && npm install @heroicons/react@2.0.18 && npx next build",
+    "start": "npx next start -p ${PORT:-3000}",
     "lint": "next lint"
   },
   "dependencies": {
