@@ -45,47 +45,33 @@
    - Select the backend directory
 
 3. Configure the service:
-   - Name: `task-management-backend` (or your preference)
-   - Environment: `Node`
-   - Build Command: `npm install && npx @nestjs/cli build`
-   - Start Command: `node dist/main.js`
-   - Select instance type (Free tier works for testing)
-   - Set Root Directory to: `backend`
+   ```
+   Name: task-management-backend
+   Root Directory: backend
+   Environment: Node
+   Build Command: npm install && npx @nestjs/cli build
+   Start Command: node dist/main.js
+   Auto-Deploy: Yes
+   ```
 
 4. Add Required Environment Variables:
    ```env
-   # Server Configuration
    NODE_ENV=production
    PORT=10000
-
-   # MongoDB Configuration (update with your values)
-   MONGODB_URI=mongodb+srv://your-connection-string
-   MONGODB_USER=your_mongodb_username
-   MONGODB_PASS=your_mongodb_password
-
-   # JWT Configuration (use secure values)
-   JWT_SECRET=generate-a-secure-32-char-min-secret
+   MONGODB_URI=your_mongodb_uri
+   MONGODB_USER=your_user
+   MONGODB_PASS=your_password
+   JWT_SECRET=your_secure_32_char_secret
    JWT_EXPIRES_IN=15m
    JWT_REFRESH_EXPIRES_IN=7d
-
-   # Rate Limiting
    RATE_LIMIT_WINDOW=3600000
    RATE_LIMIT_MAX_REQUESTS=100
    LOGIN_RATE_LIMIT_WINDOW=3600000
    LOGIN_RATE_LIMIT_MAX_ATTEMPTS=5
-
-   # CORS Configuration (update after frontend deployment)
    ALLOWED_ORIGINS=https://your-frontend-url.onrender.com
    ALLOWED_METHODS=GET,POST,PUT,DELETE,PATCH,OPTIONS
-
-   # Security Configuration
    PASSWORD_SALT_ROUNDS=12
    ```
-
-5. Important Settings:
-   - Make sure PORT is set to 10000
-   - Ensure MONGODB_URI is the complete connection string
-   - Double-check that all environment variables are set
 
 ## Step 3: Frontend Deployment
 
@@ -95,91 +81,112 @@
    - Select the frontend directory
 
 2. Configure the service:
-   - Name: `task-management-frontend` (or your preference)
-   - Environment: `Node`
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm start`
-   - Select instance type (Free tier works for testing)
-   - Set Root Directory to: `frontend`
+   ```
+   Name: task-management-frontend
+   Root Directory: frontend
+   Environment: Node
+   Build Command: npm install && npm run build
+   Start Command: npm start
+   Auto-Deploy: Yes
+   ```
 
 3. Add Environment Variables:
    ```env
+   NODE_ENV=production
+   PORT=3000
    NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
    NEXT_PUBLIC_WS_URL=wss://your-backend-url.onrender.com
    NEXT_PUBLIC_NOTIFICATIONS_ENABLED=true
    ```
 
-## Troubleshooting Guide
+## Step 4: Verify Deployments
 
-### MongoDB Connection Issues
+1. Backend Verification:
+   ```
+   a. Check deployment logs for successful build
+   b. Verify MongoDB connection is established
+   c. Test API endpoints using Postman or curl
+   ```
 
-If you see the error: "Could not connect to any servers in your MongoDB Atlas cluster":
+2. Frontend Verification:
+   ```
+   a. Check build logs for successful compilation
+   b. Visit the frontend URL
+   c. Test user registration and login
+   d. Verify task creation and management
+   ```
 
-1. Check IP Whitelist:
-   - Go to MongoDB Atlas Dashboard
-   - Network Access section
-   - Ensure 0.0.0.0/0 is in the IP whitelist
-   - If not, add it and wait 1-2 minutes for propagation
+## Troubleshooting Common Issues
 
-2. Verify Connection String:
-   - Check MONGODB_URI format
-   - Ensure username and password are URL encoded
-   - Verify database name is correct
+### 1. Backend Build Issues
+If you see TypeScript errors:
+- Check main.ts helmet import is correct
+- Verify tsconfig.json has proper settings
+- Ensure all dependencies are in package.json
 
-3. Check Database User:
-   - Confirm user has proper permissions
-   - Try recreating database user if issues persist
+### 2. Frontend Build Issues
+If you encounter Next.js build errors:
+- Check page.tsx files for correct prop types
+- Verify all dynamic routes have proper typing
+- Ensure environment variables are set correctly
 
-### Port Binding Issues
+### 3. Runtime Issues
+If the application fails to start:
+- Check MongoDB connection string
+- Verify all required environment variables
+- Ensure port configuration is correct
+- Check CORS settings match frontend URL
 
-If you see "No open ports detected":
+### 4. Connection Issues
+If frontend can't connect to backend:
+- Verify API URLs are correct
+- Check CORS configuration
+- Ensure WebSocket URL is using wss://
+- Verify network access in MongoDB Atlas
 
-1. Verify in main.ts:
-   - Port is set to process.env.PORT
-   - Listen address is set to '0.0.0.0'
+## Monitoring and Maintenance
 
-2. Check Environment Variables:
-   - PORT is set to 10000
-   - No conflicting port settings
+1. Regular Checks:
+   ```
+   - Monitor error logs in Render dashboard
+   - Check MongoDB Atlas metrics
+   - Review application performance
+   - Monitor API response times
+   ```
 
-### Deployment Logs
+2. Updates and Maintenance:
+   ```
+   - Keep dependencies updated
+   - Review security alerts
+   - Backup database regularly
+   - Monitor resource usage
+   ```
 
-To check deployment logs:
-
-1. Go to your Web Service in Render
-2. Click on "Logs" in the left menu
-3. Look for specific error messages
-4. Check "System" logs for infrastructure issues
-5. Check "Deploy" logs for build problems
-
-## Monitoring and Verification
-
-1. After Deployment:
-   - Watch logs for successful startup
-   - Verify database connection
-   - Test API endpoints
-
-2. Health Checks:
-   - Monitor application logs
-   - Check for error messages
-   - Verify WebSocket connections
-
-## Security Reminders
+## Security Best Practices
 
 1. Environment Variables:
    - Use strong JWT secrets
+   - Rotate credentials regularly
    - Keep MongoDB credentials secure
-   - Update CORS settings appropriately
+   - Use different values for production
 
 2. Database Security:
    - Regular backups
    - Monitor access logs
-   - Update user passwords periodically
+   - Update security patches
+   - Review access patterns
+
+3. Application Security:
+   - Enable rate limiting
+   - Use HTTPS only
+   - Keep dependencies updated
+   - Monitor for suspicious activity
 
 ## Additional Resources
 
-- [Render Deployment Docs](https://render.com/docs/deploy-node-express-app)
-- [MongoDB Atlas Security Checklist](https://docs.atlas.mongodb.com/security-checklist/)
-- [NestJS Production Best Practices](https://docs.nestjs.com/techniques/performance)
+- [Render Node.js Guide](https://render.com/docs/deploy-node-express-app)
+- [Next.js Deployment](https://nextjs.org/docs/deployment)
+- [MongoDB Atlas Security](https://docs.atlas.mongodb.com/security/)
+- [NestJS Production](https://docs.nestjs.com/techniques/performance)
 
-Remember to always check the deployment logs in Render dashboard if you encounter any issues. They provide valuable information about what might be going wrong during the deployment process.
+For any issues, check the deployment logs in your Render dashboard and ensure all environment variables are properly set.

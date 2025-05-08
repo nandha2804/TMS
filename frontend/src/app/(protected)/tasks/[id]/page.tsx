@@ -1,9 +1,17 @@
+import { Metadata } from 'next';
 import TaskDetailClient from './TaskDetail';
 
-interface TaskDetailPageProps {
-  params: { id: string };
-}
+export const metadata: Metadata = {
+  title: 'Task Detail',
+};
 
-export default function TaskDetailPage({ params }: TaskDetailPageProps) {
+type Props = {
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default async function TaskDetailPage({ params }: Props) {
   return <TaskDetailClient id={params.id} />;
 }
