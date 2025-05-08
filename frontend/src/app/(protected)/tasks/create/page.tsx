@@ -56,7 +56,7 @@ export default function CreateTaskPage() {
       description: formData.get('description') as string,
       dueDate: new Date(formData.get('dueDate') as string),
       priority: formData.get('priority') as 'low' | 'medium' | 'high',
-      assignee: formData.get('assignee') as string,
+      assigneeId: formData.get('assignee') as string,
       isRecurring: formData.get('isRecurring') === 'true',
       recurrencePattern: formData.get('recurrencePattern') as string,
     };
