@@ -1,21 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Base styles */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #007bff;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
 }
 
-@layer base {
-  :root {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --font-sans: system-ui, -apple-system, sans-serif;
-    --font-mono: monospace;
-  }
-}
-
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -23,8 +18,88 @@
   }
 }
 
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: system-ui, -apple-system, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.m-4 {
+  margin: 1rem;
+}
+
+/* Button styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  color: white;
+}
+
+/* Form styles */
+.form-control {
+  padding: 0.5rem;
+  border: 1px solid var(--secondary);
+  border-radius: 0.25rem;
+  width: 100%;
+}
+
+/* Card styles */
+.card {
+  background: var(--background);
+  border: 1px solid var(--secondary);
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
