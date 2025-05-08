@@ -1,0 +1,89 @@
+### Register a new user
+POST http://localhost:3003/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Login
+POST http://localhost:3003/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Get user profile (Replace TOKEN with actual token)
+GET http://localhost:3003/auth/profile
+Authorization: Bearer TOKEN
+
+### Create a new task
+POST http://localhost:3003/tasks
+Content-Type: application/json
+Authorization: Bearer TOKEN
+
+{
+  "title": "Test Task",
+  "description": "This is a test task",
+  "dueDate": "2025-12-31T23:59:59Z",
+  "priority": "high",
+  "assignee": "USER_ID",
+  "isRecurring": false
+}
+
+### Get all tasks
+GET http://localhost:3003/tasks
+Authorization: Bearer TOKEN
+
+### Get task by ID
+GET http://localhost:3003/tasks/TASK_ID
+Authorization: Bearer TOKEN
+
+### Update task
+PATCH http://localhost:3003/tasks/TASK_ID
+Content-Type: application/json
+Authorization: Bearer TOKEN
+
+{
+  "status": "in_progress",
+  "priority": "medium"
+}
+
+### Delete task
+DELETE http://localhost:3003/tasks/TASK_ID
+Authorization: Bearer TOKEN
+
+### Get task statistics
+GET http://localhost:3003/tasks/stats
+Authorization: Bearer TOKEN
+
+### Get my tasks
+GET http://localhost:3003/tasks/my-tasks?type=assigned
+Authorization: Bearer TOKEN
+
+### Get overdue tasks
+GET http://localhost:3003/tasks/overdue
+Authorization: Bearer TOKEN
+
+### Get all users
+GET http://localhost:3003/users
+Authorization: Bearer TOKEN
+
+### Update user
+PATCH http://localhost:3003/users/USER_ID
+Content-Type: application/json
+Authorization: Bearer TOKEN
+
+{
+  "name": "Updated Name"
+}
+
+# Instructions:
+# 1. Replace TOKEN with a valid JWT token obtained from login
+# 2. Replace USER_ID with actual user IDs
+# 3. Replace TASK_ID with actual task IDs
+# 4. Use a REST client like VS Code's REST Client or Postman to execute these requests

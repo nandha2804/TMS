@@ -1,0 +1,16 @@
+{
+  "name": "Task Management System",
+  "short_name": "Tasks",
+  "description": "A collaborative task management system for teams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
